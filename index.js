@@ -9,7 +9,7 @@ const masterKey = 'i4y97T3G-9Hpt-jGIZ-3XqC-eFjwMSgwYun8';
 const privateToken = 'test_private_uPpwmvA2DQbKoaEeVSLrKt85wC6';
 const paydunyaToken = 'ozRX1bxEQs7oFfjDidvt';
 
-app.get('/', (req, res) => {
+app.get('/disburse-', (req, res) => {
   res.send(`
     <form action="/create_invoice" method="POST">
       <label for="total_amount">Total Amount:</label>
@@ -25,11 +25,10 @@ app.get('/', (req, res) => {
 
 app.post('/create_invoice', async (req, res) => {
   try {
-    const { total_amount, description, store_name } = req.body;
+    //const { total_amount, description, store_name } = req.body;
 
     const response = await axios.post('https://app.paydunya.com/api/v1/checkout-invoice/create', {
-      invoice: { total_amount, description },
-      store: { name: store_name }
+      "invoice": {"total_amount": 5000, "description": "Chaussure VANS dernier modèle"},"store": {"name": "Magasin le Choco"}
     }, {
       headers: {
         'Content-Type': 'application/json',
@@ -39,30 +38,30 @@ app.post('/create_invoice', async (req, res) => {
       }
     });
 
-    console.log('Response:---->', response.data)
-    const invoiceUrl = response.data.response_text.checkout_url;
+    console.log('Response:---->', response.data, masterKey, privateToken, paydunyaToken)
 
-    res.send(`
-      <h2>Invoice Created Successfully</h2>
-      <p>Total Amount: ${total_amount}</p>
-      <p>Description: ${description}</p>
-      <p>Store Name: ${store_name}</p>
-      <p>Invoice URL: <a href="${invoiceUrl}" target="_blank">${invoiceUrl}</a></p>
-    `);
+    res.json(response.data);
+    // res.send(`
+    //   <h2>Invoice Created Successfully</h2>
+    //   <p>Total Amount: ${total_amount}</p>
+    //   <p>Description: ${description}</p>
+    //   <p>Store Name: ${store_name}</p>
+    //   <p>Invoice URL: <a href="${invoiceUrl}" target="_blank">${invoiceUrl}</a></p>
+    // `);
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send('Internal Server Error');
   }
 });
 
+//push api
 app.post('/get_disbursement_invoice', async (req, res) => {
   try {
-      const { account_alias, amount, withdraw_mode } = req.body;
       console.log('invoice details:---->', req.body)
       const response = await axios.post('https://app.paydunya.com/api/v1/disburse/get-invoice', {
-          account_alias,
-          amount,
-          withdraw_mode
+          account_alias: "771111111",
+          amount:"1000",
+          withdraw_mode:"moov-ci"
       }, {
           headers: {
               'Content-Type': 'application/json',
